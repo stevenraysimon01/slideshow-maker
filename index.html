@@ -30,21 +30,17 @@ button{font-family:var(--sans);font-size:13.5px;font-weight:500;border-radius:7p
 #status{font-size:13px;margin-left:4px}
 #status.ok{color:var(--success)}
 #status.err{color:var(--danger)}
-
 .picker-label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;margin-top:10px}
 .picker-label:first-child{margin-top:0}
-
 .theme-picker{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
 .theme-btn{width:28px;height:28px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;flex-shrink:0}
 .theme-btn.active{border-color:var(--text);transform:scale(1.15)}
-
 .font-picker{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px}
 .font-btn{border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;cursor:pointer;background:var(--surface);transition:border-color .15s,background .15s;text-align:left}
 .font-btn:hover{background:var(--surface2)}
 .font-btn.active{border-color:var(--accent);background:var(--accent-light)}
 .font-btn-title{font-size:13px;font-weight:600;color:var(--text);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .font-btn-sub{font-size:10.5px;color:var(--muted);margin-top:1px;display:block}
-
 .slide-list{display:flex;flex-direction:column;gap:8px}
 .slide-card{border:1px solid var(--border);border-radius:8px;overflow:hidden}
 .slide-preview{height:80px;display:flex;position:relative;overflow:hidden}
@@ -55,14 +51,11 @@ button{font-family:var(--sans);font-size:13.5px;font-weight:500;border-radius:7p
 .slide-title{font-size:11px;font-weight:700;padding-left:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .slide-text{font-size:9.5px;padding-left:12px;margin-top:2px;opacity:.65;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .img-tag{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 6px;border-radius:999px;margin-top:4px;font-weight:500;margin-left:12px}
-
 details{margin-top:1rem}
 summary{font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;padding:4px 0}
-summary:hover{color:var(--text)}
 details pre{margin-top:8px;font-family:var(--mono);font-size:11.5px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px;overflow-x:auto;line-height:1.6;color:var(--text)}
 footer{text-align:center;font-size:12px;color:var(--muted);padding:1.5rem;border-top:1px solid var(--border)}
 footer a{color:var(--accent);text-decoration:none}
-footer a:hover{text-decoration:underline}
 .empty-state{text-align:center;padding:2.5rem 1rem;color:var(--muted);font-size:13px;line-height:1.7}
 </style>
 
@@ -83,13 +76,10 @@ footer a:hover{text-decoration:underline}
       <button class="btn-ghost" style="padding:4px 10px;font-size:12px;" onclick="loadExample()">Load example</button>
     </div>
     <div class="panel-body">
-
       <div class="picker-label">Theme</div>
       <div class="theme-picker" id="theme-picker"></div>
-
       <div class="picker-label">Font pairing</div>
       <div class="font-picker" id="font-picker"></div>
-
       <textarea id="json-input" spellcheck="false" placeholder='[&#10;  { "title": "Slide title", "text": "Body text", "image": "https://..." }&#10;]'></textarea>
       <div class="actions">
         <button class="btn-primary" id="gen-btn" onclick="generate()">
@@ -107,36 +97,23 @@ footer a:hover{text-decoration:underline}
     "text":  "Body text for the slide.",
     "image": "https://example.com/photo.jpg"
   },
-  {
-    "title": "Text-only slide",
-    "text":  "No image field needed."
-  }
-]
-
-Fields:
-  title  — required, slide heading
-  text   — optional, body text
-  image  — optional, any public image URL</pre>
+  { "title": "Text-only slide", "text": "No image needed." }
+]</pre>
       </details>
     </div>
   </div>
-
   <div class="panel">
     <div class="panel-head"><h2>Preview</h2></div>
     <div class="panel-body">
-      <div id="preview">
-        <div class="empty-state">🗂️<br><br>Paste JSON on the left and<br>your slides will preview here.</div>
-      </div>
+      <div id="preview"><div class="empty-state">🗂️<br><br>Paste JSON on the left and<br>your slides will preview here.</div></div>
     </div>
   </div>
 </main>
 
-<footer>
-  After downloading, open <a href="https://slides.google.com" target="_blank">Google Slides</a> → File → Import slides
-</footer>
+<footer>After downloading, open <a href="https://slides.google.com" target="_blank">Google Slides</a> → File → Import slides</footer>
 
 <script>
-var THEMES = {
+var THEMES={
   forest:  {name:'Forest',  dot:'#2D5A3D',bg:'F7F6F2',accent:'2D5A3D',titleClr:'1A1A18',bodyClr:'4A4A46'},
   ocean:   {name:'Ocean',   dot:'#185FA5',bg:'F0F4FA',accent:'185FA5',titleClr:'0D2340',bodyClr:'2C4A6E'},
   slate:   {name:'Slate',   dot:'#3C4A5C',bg:'F2F3F5',accent:'3C4A5C',titleClr:'1C2230',bodyClr:'3C4A5C'},
@@ -147,167 +124,328 @@ var THEMES = {
   charcoal:{name:'Charcoal',dot:'#2C2C2A',bg:'EDEDED',accent:'2C2C2A',titleClr:'111110',bodyClr:'444441'},
 };
 
-var FONT_PAIRINGS = [
-  {id:'editorial', label:'Editorial',    desc:'Georgia + Calibri',      titleFont:'Georgia',        bodyFont:'Calibri',     previewTitle:'Georgia',    previewBody:'Calibri'},
-  {id:'modern',    label:'Modern',       desc:'Helvetica + Helvetica',  titleFont:'Helvetica Neue', bodyFont:'Helvetica',   previewTitle:'Helvetica',  previewBody:'Helvetica'},
-  {id:'classic',   label:'Classic',      desc:'Garamond + Gill Sans',   titleFont:'Garamond',       bodyFont:'Gill Sans',   previewTitle:'Garamond',   previewBody:'Gill Sans'},
-  {id:'sharp',     label:'Sharp',        desc:'Arial + Trebuchet',      titleFont:'Arial',          bodyFont:'Trebuchet MS',previewTitle:'Arial',      previewBody:'Trebuchet MS'},
-  {id:'elegant',   label:'Elegant',      desc:'Palatino + Book Antiqua',titleFont:'Palatino Linotype',bodyFont:'Book Antiqua',previewTitle:'Palatino',  previewBody:'Book Antiqua'},
-  {id:'tech',      label:'Tech',         desc:'Century Gothic + Calibri',titleFont:'Century Gothic', bodyFont:'Calibri',    previewTitle:'Century Gothic',previewBody:'Calibri'},
+var FONT_PAIRINGS=[
+  {id:'editorial',label:'Editorial',  desc:'Georgia + Calibri',        titleFont:'Georgia',          bodyFont:'Calibri',      previewTitle:'Georgia',       previewBody:'Calibri'},
+  {id:'modern',   label:'Modern',     desc:'Helvetica + Helvetica',    titleFont:'Helvetica Neue',   bodyFont:'Helvetica',    previewTitle:'Helvetica',     previewBody:'Helvetica'},
+  {id:'classic',  label:'Classic',    desc:'Garamond + Gill Sans',     titleFont:'Garamond',         bodyFont:'Gill Sans',    previewTitle:'Garamond',      previewBody:'Gill Sans'},
+  {id:'sharp',    label:'Sharp',      desc:'Arial + Trebuchet',        titleFont:'Arial',            bodyFont:'Trebuchet MS', previewTitle:'Arial',         previewBody:'Trebuchet MS'},
+  {id:'elegant',  label:'Elegant',    desc:'Palatino + Book Antiqua',  titleFont:'Palatino Linotype',bodyFont:'Book Antiqua', previewTitle:'Palatino Linotype',previewBody:'Book Antiqua'},
+  {id:'tech',     label:'Tech',       desc:'Century Gothic + Calibri', titleFont:'Century Gothic',   bodyFont:'Calibri',      previewTitle:'Century Gothic',previewBody:'Calibri'},
 ];
 
-var currentTheme = 'forest';
-var currentFont  = 'editorial';
+var currentTheme='forest', currentFont='editorial';
 
-function buildThemePicker() {
-  var el = document.getElementById('theme-picker');
-  el.innerHTML = '';
-  Object.entries(THEMES).forEach(function(entry) {
-    var key = entry[0], t = entry[1];
-    var btn = document.createElement('button');
-    btn.className = 'theme-btn' + (key === currentTheme ? ' active' : '');
-    btn.title = t.name;
-    btn.style.background = t.dot;
-    btn.onclick = function() {
-      currentTheme = key;
-      document.querySelectorAll('.theme-btn').forEach(function(b){b.classList.remove('active');});
-      btn.classList.add('active');
-      tryRenderPreview();
-    };
+function buildThemePicker(){
+  var el=document.getElementById('theme-picker');el.innerHTML='';
+  Object.entries(THEMES).forEach(function(e){
+    var key=e[0],t=e[1],btn=document.createElement('button');
+    btn.className='theme-btn'+(key===currentTheme?' active':'');
+    btn.title=t.name;btn.style.background=t.dot;
+    btn.onclick=function(){currentTheme=key;document.querySelectorAll('.theme-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');tryRenderPreview();};
     el.appendChild(btn);
   });
 }
 
-function buildFontPicker() {
-  var el = document.getElementById('font-picker');
-  el.innerHTML = '';
-  FONT_PAIRINGS.forEach(function(fp) {
-    var btn = document.createElement('button');
-    btn.className = 'font-btn' + (fp.id === currentFont ? ' active' : '');
-    btn.innerHTML =
-      '<span class="font-btn-title" style="font-family:\''+fp.previewTitle+'\',serif">'+fp.label+'</span>'+
-      '<span class="font-btn-sub" style="font-family:\''+fp.previewBody+'\',sans-serif">'+fp.desc+'</span>';
-    btn.onclick = function() {
-      currentFont = fp.id;
-      document.querySelectorAll('.font-btn').forEach(function(b){b.classList.remove('active');});
-      btn.classList.add('active');
-      tryRenderPreview();
-    };
+function buildFontPicker(){
+  var el=document.getElementById('font-picker');el.innerHTML='';
+  FONT_PAIRINGS.forEach(function(fp){
+    var btn=document.createElement('button');
+    btn.className='font-btn'+(fp.id===currentFont?' active':'');
+    btn.innerHTML='<span class="font-btn-title" style="font-family:\''+fp.previewTitle+'\',serif">'+fp.label+'</span><span class="font-btn-sub" style="font-family:\''+fp.previewBody+'\',sans-serif">'+fp.desc+'</span>';
+    btn.onclick=function(){currentFont=fp.id;document.querySelectorAll('.font-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');tryRenderPreview();};
     el.appendChild(btn);
   });
 }
 
-function getFontPairing() {
-  return FONT_PAIRINGS.find(function(f){return f.id===currentFont;}) || FONT_PAIRINGS[0];
-}
+function getFP(){return FONT_PAIRINGS.find(function(f){return f.id===currentFont;})||FONT_PAIRINGS[0];}
+function tryRenderPreview(){try{var d=JSON.parse(document.getElementById('json-input').value.trim());if(!Array.isArray(d))d=[d];renderPreview(d);}catch(e){}}
 
-function tryRenderPreview() {
-  try {
-    var data = JSON.parse(document.getElementById('json-input').value.trim());
-    if (!Array.isArray(data)) data = [data];
-    renderPreview(data);
-  } catch(e) {}
-}
-
-var ZIP = (function(){
-  function crc32(buf){var table=[];for(var i=0;i<256;i++){var c=i;for(var j=0;j<8;j++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);table[i]=c;}var crc=0xFFFFFFFF;for(var k=0;k<buf.length;k++)crc=table[(crc^buf[k])&0xFF]^(crc>>>8);return(crc^0xFFFFFFFF)>>>0;}
-  function strToBytes(str){var b=[];for(var i=0;i<str.length;i++){var c=str.charCodeAt(i);if(c<128)b.push(c);else if(c<2048)b.push(192|(c>>6),128|(c&63));else b.push(224|(c>>12),128|((c>>6)&63),128|(c&63));}return new Uint8Array(b);}
-  function ui16(n){return[n&0xFF,(n>>8)&0xFF];}
-  function ui32(n){return[n&0xFF,(n>>8)&0xFF,(n>>16)&0xFF,(n>>24)&0xFF];}
-  function concat(){var a=Array.prototype.slice.call(arguments),t=a.reduce(function(s,x){return s+x.length;},0),o=new Uint8Array(t),off=0;a.forEach(function(x){o.set(x,off);off+=x.length;});return o;}
-  function create(){
+/* ── ZIP builder ── */
+var ZIP=(function(){
+  function crc32(buf){
+    var tbl=[],c,i,j;
+    for(i=0;i<256;i++){c=i;for(j=0;j<8;j++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);tbl[i]=c;}
+    var crc=0xFFFFFFFF;
+    for(i=0;i<buf.length;i++)crc=tbl[(crc^buf[i])&0xFF]^(crc>>>8);
+    return(crc^0xFFFFFFFF)>>>0;
+  }
+  function str2u8(s){var b=[];for(var i=0;i<s.length;i++){var c=s.charCodeAt(i);if(c<128)b.push(c);else if(c<2048)b.push(192|(c>>6),128|(c&63));else b.push(224|(c>>12),128|((c>>6)&63),128|(c&63));}return new Uint8Array(b);}
+  function u16(n){return[n&0xFF,(n>>8)&0xFF];}
+  function u32(n){return[n&0xFF,(n>>8)&0xFF,(n>>16)&0xFF,(n>>24)&0xFF];}
+  function cat(){var a=Array.prototype.slice.call(arguments),t=a.reduce(function(s,x){return s+x.length;},0),o=new Uint8Array(t),p=0;a.forEach(function(x){o.set(x,p);p+=x.length;});return o;}
+  return{create:function(){
     var files=[];
-    function addFile(name,data){var nb=strToBytes(name);var db=(typeof data==='string')?strToBytes(data):data;files.push({name:nb,data:db,crc:crc32(db),dosDate:0x5400,dosTime:0});}
+    function add(name,data){var nb=str2u8(name);var db=typeof data==='string'?str2u8(data):data;files.push({name:nb,data:db,crc:crc32(db)});}
     function build(){
       var lhs=[],offs=[],off=0;
-      files.forEach(function(f){offs.push(off);var lh=concat(new Uint8Array([0x50,0x4B,0x03,0x04]),new Uint8Array([20,0,0,0,0,0]),new Uint8Array(ui16(f.dosTime)),new Uint8Array(ui16(f.dosDate)),new Uint8Array(ui32(f.crc)),new Uint8Array(ui32(f.data.length)),new Uint8Array(ui32(f.data.length)),new Uint8Array(ui16(f.name.length)),new Uint8Array([0,0]),f.name,f.data);lhs.push(lh);off+=lh.length;});
+      files.forEach(function(f){
+        offs.push(off);
+        var lh=cat(new Uint8Array([0x50,0x4B,0x03,0x04,0x14,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x21,0x00]),
+          new Uint8Array(u32(f.crc)),new Uint8Array(u32(f.data.length)),new Uint8Array(u32(f.data.length)),
+          new Uint8Array(u16(f.name.length)),new Uint8Array([0x00,0x00]),f.name,f.data);
+        lhs.push(lh);off+=lh.length;
+      });
       var cds=[],co=off;
-      files.forEach(function(f,i){cds.push(concat(new Uint8Array([0x50,0x4B,0x01,0x02]),new Uint8Array([20,0,20,0,0,0,0,0]),new Uint8Array(ui16(f.dosTime)),new Uint8Array(ui16(f.dosDate)),new Uint8Array(ui32(f.crc)),new Uint8Array(ui32(f.data.length)),new Uint8Array(ui32(f.data.length)),new Uint8Array(ui16(f.name.length)),new Uint8Array([0,0,0,0,0,0,0,0,0,0]),new Uint8Array(ui32(offs[i])),f.name));});
+      files.forEach(function(f,i){
+        cds.push(cat(new Uint8Array([0x50,0x4B,0x01,0x02,0x14,0x00,0x14,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x21,0x00]),
+          new Uint8Array(u32(f.crc)),new Uint8Array(u32(f.data.length)),new Uint8Array(u32(f.data.length)),
+          new Uint8Array(u16(f.name.length)),new Uint8Array([0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00]),
+          new Uint8Array(u32(offs[i])),f.name));
+      });
       var cs=cds.reduce(function(s,c){return s+c.length;},0);
-      var eocd=concat(new Uint8Array([0x50,0x4B,0x05,0x06,0,0,0,0]),new Uint8Array(ui16(files.length)),new Uint8Array(ui16(files.length)),new Uint8Array(ui32(cs)),new Uint8Array(ui32(co)),new Uint8Array([0,0]));
-      return concat.apply(null,lhs.concat(cds).concat([eocd]));
+      var eocd=cat(new Uint8Array([0x50,0x4B,0x05,0x06,0x00,0x00,0x00,0x00]),
+        new Uint8Array(u16(files.length)),new Uint8Array(u16(files.length)),
+        new Uint8Array(u32(cs)),new Uint8Array(u32(co)),new Uint8Array([0x00,0x00]));
+      return cat.apply(null,lhs.concat(cds).concat([eocd]));
     }
-    return {addFile:addFile,build:build};
-  }
-  return {create:create};
+    return{addFile:add,build:build};
+  }};
 })();
 
 function emu(i){return Math.round(i*914400);}
 var SW=emu(10),SH=emu(5.625);
-function xmlEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');}
-var _spId=10;
-function nextId(){return++_spId;}
+function xe(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');}
+var _id=10;function nid(){return++_id;}
 
-function makeRect(x,y,cx,cy,color){var id=nextId();return'<p:sp><p:nvSpPr><p:cNvPr id="'+id+'" name="r'+id+'"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="'+x+'" y="'+y+'"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="'+color+'"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>';}
-function makeTextBox(text,x,y,cx,cy,ptSize,bold,color,font){var id=nextId();return'<p:sp><p:nvSpPr><p:cNvPr id="'+id+'" name="t'+id+'"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="'+x+'" y="'+y+'"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr wrap="square" lIns="0" rIns="0" tIns="0" bIns="0" anchor="t"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="'+ptSize+'" b="'+(bold?'1':'0')+'" dirty="0"><a:solidFill><a:srgbClr val="'+color+'"/></a:solidFill><a:latin typeface="'+xmlEsc(font)+'" panose="00000000000000000000"/></a:rPr><a:t>'+xmlEsc(text)+'</a:t></a:r></a:p></p:txBody></p:sp>';}
-function makePic(rId,x,y,cx,cy){var id=nextId();return'<p:pic><p:nvPicPr><p:cNvPr id="'+id+'" name="i'+id+'"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="'+rId+'"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="'+x+'" y="'+y+'"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>';}
+function makeRect(x,y,cx,cy,col){
+  var id=nid();
+  return '<p:sp><p:nvSpPr><p:cNvPr id="'+id+'" name="r'+id+'"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr/></p:nvSpPr>'
+    +'<p:spPr bwMode="auto"><a:xfrm><a:off x="'+x+'" y="'+y+'"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm>'
+    +'<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>'
+    +'<a:solidFill><a:srgbClr val="'+col+'"/></a:solidFill>'
+    +'<a:ln><a:noFill/></a:ln></p:spPr>'
+    +'<p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:endParaRPr lang="en-US" dirty="0"/></a:p></p:txBody></p:sp>';
+}
 
-async function buildPptx(slides) {
-  var t = THEMES[currentTheme];
-  var fp = getFontPairing();
-  var zip = ZIP.create();
+function makeTxt(text,x,y,cx,cy,sz,bold,col,font){
+  var id=nid();
+  return '<p:sp><p:nvSpPr><p:cNvPr id="'+id+'" name="t'+id+'"/><p:cNvSpPr txBox="1"><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr/></p:nvSpPr>'
+    +'<p:spPr bwMode="auto"><a:xfrm><a:off x="'+x+'" y="'+y+'"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm>'
+    +'<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr>'
+    +'<p:txBody>'
+    +'<a:bodyPr wrap="square" lIns="91440" rIns="91440" tIns="45720" bIns="45720" anchor="t" anchorCtr="0"/>'
+    +'<a:lstStyle/>'
+    +'<a:p><a:pPr algn="l"><a:lnSpc><a:spcPct val="115%"/></a:lnSpc></a:pPr>'
+    +'<a:r><a:rPr lang="en-US" altLang="en-US" sz="'+sz+'" b="'+(bold?'1':'0')+'" i="0" u="none" strike="noStrike" dirty="0" smtClean="0">'
+    +'<a:solidFill><a:srgbClr val="'+col+'"/></a:solidFill>'
+    +'<a:latin typeface="'+xe(font)+'"/>'
+    +'<a:cs typeface="'+xe(font)+'"/>'
+    +'</a:rPr><a:t>'+xe(text)+'</a:t></a:r></a:p>'
+    +'</p:txBody></p:sp>';
+}
 
-  zip.addFile('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/></Relationships>');
+function makePic(rId,x,y,cx,cy){
+  var id=nid();
+  return '<p:pic><p:nvPicPr>'
+    +'<p:cNvPr id="'+id+'" name="img'+id+'"/>'
+    +'<p:cNvPicPr><a:picLocks noChangeAspect="1" noChangeArrowheads="1"/></p:cNvPicPr>'
+    +'<p:nvPr/></p:nvPicPr>'
+    +'<p:blipFill><a:blip r:embed="'+rId+'" cstate="print"/>'
+    +'<a:stretch><a:fillRect/></a:stretch></p:blipFill>'
+    +'<p:spPr bwMode="auto"><a:xfrm><a:off x="'+x+'" y="'+y+'"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm>'
+    +'<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr>'
+    +'</p:pic>';
+}
 
-  var ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="png" ContentType="image/png"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/><Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/><Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/>';
-  for(var i=0;i<slides.length;i++)ct+='<Override PartName="/ppt/slides/slide'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>';
+async function buildPptx(slides){
+  var t=THEMES[currentTheme], fp=getFP();
+  var zip=ZIP.create();
+
+  /* ── _rels/.rels ── */
+  zip.addFile('_rels/.rels',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/>'+
+    '</Relationships>');
+
+  /* ── [Content_Types].xml ── */
+  var ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+    '<Default Extension="xml" ContentType="application/xml"/>'+
+    '<Default Extension="png" ContentType="image/png"/>'+
+    '<Default Extension="jpg" ContentType="image/jpeg"/>'+
+    '<Default Extension="jpeg" ContentType="image/jpeg"/>'+
+    '<Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/>'+
+    '<Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/>'+
+    '<Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/>';
+  for(var i=0;i<slides.length;i++)
+    ct+='<Override PartName="/ppt/slides/slide'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>';
   ct+='</Types>';
   zip.addFile('[Content_Types].xml',ct);
 
-  zip.addFile('ppt/slideMasters/_rels/slideMaster1.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/></Relationships>');
-  zip.addFile('ppt/slideMasters/slideMaster1.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldMaster xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><p:cSld><p:bg><p:bgPr><a:solidFill><a:srgbClr val="'+t.bg+'"/></a:solidFill><a:effectLst/></p:bgPr></p:bg><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:txStyles><p:titleStyle><a:lvl1pPr><a:defRPr lang="en-US"><a:latin typeface="'+xmlEsc(fp.titleFont)+'"/></a:defRPr></a:lvl1pPr></p:titleStyle><p:bodyStyle><a:lvl1pPr><a:defRPr lang="en-US"><a:latin typeface="'+xmlEsc(fp.bodyFont)+'"/></a:defRPr></a:lvl1pPr></p:bodyStyle><p:otherStyle><a:lvl1pPr><a:defRPr lang="en-US"/></a:lvl1pPr></p:otherStyle></p:txStyles></p:sldMaster>');
-  zip.addFile('ppt/slideLayouts/_rels/slideLayout1.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="../slideMasters/slideMaster1.xml"/></Relationships>');
-  zip.addFile('ppt/slideLayouts/slideLayout1.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldLayout xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" type="blank"><p:cSld name="Blank"><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld></p:sldLayout>');
+  /* ── slide master ── */
+  zip.addFile('ppt/slideMasters/_rels/slideMaster1.xml.rels',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/>'+
+    '</Relationships>');
 
-  var imageDataMap={};
-  for(var si=0;si<slides.length;si++){var imgUrl=slides[si].image;if(imgUrl&&!imageDataMap[imgUrl]){try{var resp=await fetch(imgUrl);var blob=await resp.blob();var ext=(blob.type==='image/png')?'png':'jpg';var ab=await blob.arrayBuffer();imageDataMap[imgUrl]={ext:ext,data:new Uint8Array(ab)};}catch(e){imageDataMap[imgUrl]=null;}}}
+  zip.addFile('ppt/slideMasters/slideMaster1.xml',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<p:sldMaster xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"'+
+    ' xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"'+
+    ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+    '<p:cSld>'+
+      '<p:bg><p:bgPr><a:solidFill><a:srgbClr val="'+t.bg+'"/></a:solidFill><a:effectLst/></p:bgPr></p:bg>'+
+      '<p:spTree>'+
+        '<p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr>'+
+        '<p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>'+
+      '</p:spTree>'+
+    '</p:cSld>'+
+    '<p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/>'+
+    '<p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst>'+
+    '<p:txStyles>'+
+      '<p:titleStyle><a:lvl1pPr algn="l"><a:defRPr lang="en-US" b="1"><a:latin typeface="+mj-lt"/></a:defRPr></a:lvl1pPr></p:titleStyle>'+
+      '<p:bodyStyle><a:lvl1pPr><a:defRPr lang="en-US"><a:latin typeface="+mn-lt"/></a:defRPr></a:lvl1pPr></p:bodyStyle>'+
+      '<p:otherStyle><a:lvl1pPr><a:defRPr lang="en-US"/></a:lvl1pPr></p:otherStyle>'+
+    '</p:txStyles>'+
+    '</p:sldMaster>');
 
-  var addedImages={};
-  var slideIdList='',presRels='';
-  for(var i=0;i<slides.length;i++){var rId='rId'+(i+2);slideIdList+='<p:sldId id="'+(256+i)+'" r:id="'+rId+'"/>';presRels+='<Relationship Id="'+rId+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide'+(i+1)+'.xml"/>';}
-  zip.addFile('ppt/_rels/presentation.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="slideMasters/slideMaster1.xml"/>'+presRels+'</Relationships>');
-  zip.addFile('ppt/presentation.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:presentation xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst><p:sldIdLst>'+slideIdList+'</p:sldIdLst><p:sldSz cx="'+SW+'" cy="'+SH+'" type="screen16x9"/><p:notesSz cx="'+SH+'" cy="'+SW+'"/></p:presentation>');
+  /* ── slide layout ── */
+  zip.addFile('ppt/slideLayouts/_rels/slideLayout1.xml.rels',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="../slideMasters/slideMaster1.xml"/>'+
+    '</Relationships>');
 
-  var imgCounter=0;
+  zip.addFile('ppt/slideLayouts/slideLayout1.xml',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<p:sldLayout xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"'+
+    ' xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"'+
+    ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'+
+    ' type="blank" preserve="1">'+
+    '<p:cSld name="Blank">'+
+      '<p:spTree>'+
+        '<p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr>'+
+        '<p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>'+
+      '</p:spTree>'+
+    '</p:cSld>'+
+    '<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>'+
+    '</p:sldLayout>');
+
+  /* ── fetch images ── */
+  var imgMap={};
+  for(var si=0;si<slides.length;si++){
+    var url=slides[si].image;
+    if(url&&!imgMap[url]){
+      try{
+        var r=await fetch(url);var b=await r.blob();
+        var ext=b.type==='image/png'?'png':'jpg';
+        var ab=await b.arrayBuffer();
+        imgMap[url]={ext:ext,data:new Uint8Array(ab)};
+      }catch(e){imgMap[url]=null;}
+    }
+  }
+
+  /* ── presentation.xml ── */
+  var sldIds='',presRels='';
+  for(var i=0;i<slides.length;i++){
+    sldIds+='<p:sldId id="'+(256+i)+'" r:id="rId'+(i+2)+'"/>';
+    presRels+='<Relationship Id="rId'+(i+2)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide'+(i+1)+'.xml"/>';
+  }
+  zip.addFile('ppt/_rels/presentation.xml.rels',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="slideMasters/slideMaster1.xml"/>'+
+    presRels+'</Relationships>');
+
+  zip.addFile('ppt/presentation.xml',
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<p:presentation xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"'+
+    ' xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"'+
+    ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'+
+    ' saveSubsetFonts="1">'+
+    '<p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst>'+
+    '<p:sldIdLst>'+sldIds+'</p:sldIdLst>'+
+    '<p:sldSz cx="'+SW+'" cy="'+SH+'" type="screen16x9"/>'+
+    '<p:notesSz cx="6858000" cy="9144000"/>'+
+    '<p:defaultTextStyle>'+
+      '<a:defPPr><a:defRPr lang="en-US"/></a:defPPr>'+
+    '</p:defaultTextStyle>'+
+    '</p:presentation>');
+
+  /* ── slides ── */
+  var addedImgs={},imgCtr=0;
   for(var i=0;i<slides.length;i++){
     var s=slides[i];
-    var slideRels='<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/>';
-    var slideImgRid=null;
-    if(s.image&&imageDataMap[s.image]){var imgInfo=imageDataMap[s.image];if(!addedImages[s.image]){imgCounter++;zip.addFile('ppt/media/img'+imgCounter+'.'+imgInfo.ext,imgInfo.data);addedImages[s.image]={rId:'rId2',num:imgCounter,ext:imgInfo.ext};}slideImgRid=addedImages[s.image].rId;slideRels+='<Relationship Id="'+slideImgRid+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/img'+addedImages[s.image].num+'.'+addedImages[s.image].ext+'"/>';}
-    zip.addFile('ppt/slides/_rels/slide'+(i+1)+'.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+slideRels+'</Relationships>');
-    var spTree='';
-    var hasImg=!!(slideImgRid);
-    spTree+=makeRect(0,0,SW,SH,t.bg);
-    if(hasImg){spTree+=makeRect(0,0,emu(5.05),SH,t.bg);spTree+=makeRect(emu(0.42),emu(1.2),emu(0.05),emu(0.95),t.accent);spTree+=makeTextBox(s.title||'',emu(0.6),emu(1.15),emu(4.2),emu(1.2),2800,true,t.titleClr,fp.titleFont);if(s.text)spTree+=makeTextBox(s.text,emu(0.6),emu(2.5),emu(4.2),emu(2.2),1500,false,t.bodyClr,fp.bodyFont);}
-    else{spTree+=makeRect(emu(0.55),emu(1.6),emu(0.05),emu(1.0),t.accent);spTree+=makeTextBox(s.title||'',emu(0.8),emu(1.55),emu(8.6),emu(1.2),3400,true,t.titleClr,fp.titleFont);if(s.text)spTree+=makeTextBox(s.text,emu(0.8),emu(2.9),emu(8.2),emu(1.8),1800,false,t.bodyClr,fp.bodyFont);}
-    zip.addFile('ppt/slides/slide'+(i+1)+'.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+SW+'" cy="'+SH+'"/><a:chOff x="0" y="0"/><a:chExt cx="'+SW+'" cy="'+SH+'"/></a:xfrm></p:grpSpPr>'+spTree+(hasImg?makePic(slideImgRid,emu(5.1),0,emu(4.9),SH):'')+'</p:spTree></p:cSld></p:sld>');
+    var hasImg=!!(s.image&&imgMap[s.image]);
+    var imgRid=null,imgNum=0;
+
+    var relsXml='<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/>';
+
+    if(hasImg){
+      var info=imgMap[s.image];
+      if(!addedImgs[s.image]){
+        imgCtr++;
+        zip.addFile('ppt/media/img'+imgCtr+'.'+info.ext,info.data);
+        addedImgs[s.image]={num:imgCtr,ext:info.ext};
+      }
+      imgNum=addedImgs[s.image].num;
+      imgRid='rId2';
+      relsXml+='<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/img'+imgNum+'.'+addedImgs[s.image].ext+'"/>';
+    }
+
+    zip.addFile('ppt/slides/_rels/slide'+(i+1)+'.xml.rels',
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+relsXml+'</Relationships>');
+
+    var shapes='';
+    shapes+=makeRect(0,0,SW,SH,t.bg);
+    if(hasImg){
+      shapes+=makeRect(0,0,emu(5.05),SH,t.bg);
+      shapes+=makeRect(emu(0.42),emu(1.2),emu(0.05),emu(0.95),t.accent);
+      shapes+=makeTxt(s.title||'',emu(0.6),emu(1.15),emu(4.2),emu(1.25),2800,true,t.titleClr,fp.titleFont);
+      if(s.text)shapes+=makeTxt(s.text,emu(0.6),emu(2.55),emu(4.2),emu(2.2),1500,false,t.bodyClr,fp.bodyFont);
+      shapes+=makePic(imgRid,emu(5.1),0,emu(4.9),SH);
+    } else {
+      shapes+=makeRect(emu(0.55),emu(1.6),emu(0.05),emu(1.0),t.accent);
+      shapes+=makeTxt(s.title||'',emu(0.8),emu(1.55),emu(8.6),emu(1.25),3400,true,t.titleClr,fp.titleFont);
+      if(s.text)shapes+=makeTxt(s.text,emu(0.8),emu(2.95),emu(8.2),emu(1.8),1800,false,t.bodyClr,fp.bodyFont);
+    }
+
+    zip.addFile('ppt/slides/slide'+(i+1)+'.xml',
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"'+
+      ' xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"'+
+      ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'+
+      ' show="1">'+
+      '<p:cSld>'+
+        '<p:spTree>'+
+          '<p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr>'+
+          '<p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+SW+'" cy="'+SH+'"/><a:chOff x="0" y="0"/><a:chExt cx="'+SW+'" cy="'+SH+'"/></a:xfrm></p:grpSpPr>'+
+          shapes+
+        '</p:spTree>'+
+      '</p:cSld>'+
+      '<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>'+
+      '</p:sld>');
   }
+
   return zip.build();
 }
 
+/* ── UI ── */
 var EXAMPLE=[
   {title:'Welcome to Our Story',text:'A journey worth sharing with the people you love.',image:'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=800'},
   {title:'Chapter One',text:'Every great adventure begins with a single step into the unknown.',image:'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800'},
   {title:'The Heart of It All',text:"What matters most isn't where you're going, but who you bring along."}
 ];
-
 var textarea=document.getElementById('json-input');
 var statusEl=document.getElementById('status');
 
 function loadExample(){textarea.value=JSON.stringify(EXAMPLE,null,2);setStatus('','');renderPreview(EXAMPLE);}
 function clearAll(){textarea.value='';setStatus('','');document.getElementById('preview').innerHTML='<div class="empty-state">🗂️<br><br>Paste JSON on the left and<br>your slides will preview here.</div>';}
-function setStatus(msg,type){statusEl.textContent=msg;statusEl.className=type||'';}
+function setStatus(m,c){statusEl.textContent=m;statusEl.className=c||'';}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 function renderPreview(slides){
   if(!slides||!slides.length)return;
-  var t=THEMES[currentTheme];
-  var fp=getFontPairing();
-  var bg='#'+t.bg, ac='#'+t.accent, tc='#'+t.titleClr, bc='#'+t.bodyClr;
+  var t=THEMES[currentTheme],fp=getFP();
+  var bg='#'+t.bg,ac='#'+t.accent,tc='#'+t.titleClr,bc='#'+t.bodyClr;
   var html='<div class="slide-list">';
   for(var i=0;i<slides.length;i++){
     var s=slides[i];
-    html+='<div class="slide-card" style="background:'+bg+';border-color:'+ac+'44">'
+    html+='<div class="slide-card" style="background:'+bg+';border-color:'+ac+'55">'
       +'<div class="slide-preview">'
       +'<div class="slide-left">'
       +'<div class="slide-accent-bar" style="background:'+ac+'"></div>'
@@ -317,11 +455,9 @@ function renderPreview(slides){
       +(s.image?'<div class="img-tag" style="background:'+ac+'22;color:'+ac+'">photo</div>':'')
       +'</div>'
       +(s.image?'<div class="slide-right" style="background-image:url('+esc(s.image)+')"></div>':'<div class="slide-right" style="background:'+ac+'11"></div>')
-      +'</div>'
-      +'</div>';
+      +'</div></div>';
   }
-  html+='</div>';
-  document.getElementById('preview').innerHTML=html;
+  document.getElementById('preview').innerHTML=html+'</div>';
 }
 
 textarea.addEventListener('input',function(){try{var d=JSON.parse(textarea.value.trim());if(!Array.isArray(d))d=[d];renderPreview(d);setStatus('','');}catch(e){}});
@@ -331,11 +467,11 @@ async function generate(){
   btn.disabled=true;setStatus('Building…','');
   try{
     var raw=textarea.value.trim();
-    if(!raw)throw new Error('Please paste some JSON first.');
+    if(!raw)throw new Error('Paste some JSON first.');
     var slides=JSON.parse(raw);
     if(!Array.isArray(slides))slides=[slides];
-    if(!slides.length)throw new Error('JSON array is empty.');
-    renderPreview(slides);_spId=10;
+    if(!slides.length)throw new Error('Array is empty.');
+    renderPreview(slides);_id=10;
     var bytes=await buildPptx(slides);
     var blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.presentationml.presentation'});
     var url=URL.createObjectURL(blob);
