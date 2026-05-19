@@ -18,7 +18,7 @@ main{flex:1;max-width:960px;width:100%;margin:0 auto;padding:2rem;display:grid;g
 .panel-head{padding:.85rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2)}
 .panel-head h2{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .panel-body{padding:1rem}
-textarea{width:100%;min-height:200px;font-family:var(--mono);font-size:12.5px;line-height:1.65;background:#fafaf8;border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;outline:none;transition:border-color .15s}
+textarea{width:100%;min-height:180px;font-family:var(--mono);font-size:12.5px;line-height:1.65;background:#fafaf8;border:1px solid var(--border);border-radius:6px;padding:12px;color:var(--text);resize:vertical;outline:none;transition:border-color .15s}
 textarea:focus{border-color:var(--accent)}
 .actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
 button{font-family:var(--sans);font-size:13.5px;font-weight:500;border-radius:7px;padding:8px 16px;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
@@ -31,21 +31,30 @@ button{font-family:var(--sans);font-size:13.5px;font-weight:500;border-radius:7p
 #status.ok{color:var(--success)}
 #status.err{color:var(--danger)}
 
-.theme-picker{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.picker-label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500;margin-top:10px}
+.picker-label:first-child{margin-top:0}
+
+.theme-picker{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
 .theme-btn{width:28px;height:28px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;flex-shrink:0}
 .theme-btn.active{border-color:var(--text);transform:scale(1.15)}
-.theme-label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500}
+
+.font-picker{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px}
+.font-btn{border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;cursor:pointer;background:var(--surface);transition:border-color .15s,background .15s;text-align:left}
+.font-btn:hover{background:var(--surface2)}
+.font-btn.active{border-color:var(--accent);background:var(--accent-light)}
+.font-btn-title{font-size:13px;font-weight:600;color:var(--text);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.font-btn-sub{font-size:10.5px;color:var(--muted);margin-top:1px;display:block}
 
 .slide-list{display:flex;flex-direction:column;gap:8px}
 .slide-card{border:1px solid var(--border);border-radius:8px;overflow:hidden}
 .slide-preview{height:80px;display:flex;position:relative;overflow:hidden}
 .slide-left{flex:0 0 55%;padding:8px 10px;display:flex;flex-direction:column;justify-content:center;position:relative}
 .slide-right{flex:1;background-size:cover;background-position:center}
-.slide-accent-bar{width:3px;height:100%;position:absolute;left:6px;top:0;border-radius:0}
+.slide-accent-bar{width:3px;height:100%;position:absolute;left:6px;top:0}
 .slide-num{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.55;margin-bottom:2px;padding-left:12px}
 .slide-title{font-size:11px;font-weight:700;padding-left:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .slide-text{font-size:9.5px;padding-left:12px;margin-top:2px;opacity:.65;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.img-tag{display:inline-flex;align-items:center;gap:3px;font-size:10px;background:var(--accent-light);color:var(--accent);padding:2px 6px;border-radius:999px;margin-top:4px;font-weight:500;margin-left:12px}
+.img-tag{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 6px;border-radius:999px;margin-top:4px;font-weight:500;margin-left:12px}
 
 details{margin-top:1rem}
 summary{font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;padding:4px 0}
@@ -63,7 +72,7 @@ footer a:hover{text-decoration:underline}
   </div>
   <div>
     <h1>JSON → Slides Generator</h1>
-    <p>Paste JSON, pick a theme, download .pptx</p>
+    <p>Paste JSON, pick a theme &amp; font, download .pptx</p>
   </div>
 </header>
 
@@ -74,8 +83,13 @@ footer a:hover{text-decoration:underline}
       <button class="btn-ghost" style="padding:4px 10px;font-size:12px;" onclick="loadExample()">Load example</button>
     </div>
     <div class="panel-body">
-      <div class="theme-label">Theme</div>
+
+      <div class="picker-label">Theme</div>
       <div class="theme-picker" id="theme-picker"></div>
+
+      <div class="picker-label">Font pairing</div>
+      <div class="font-picker" id="font-picker"></div>
+
       <textarea id="json-input" spellcheck="false" placeholder='[&#10;  { "title": "Slide title", "text": "Body text", "image": "https://..." }&#10;]'></textarea>
       <div class="actions">
         <button class="btn-primary" id="gen-btn" onclick="generate()">
@@ -123,62 +137,94 @@ Fields:
 
 <script>
 var THEMES = {
-  forest:  { name:'Forest',  dot:'#2D5A3D', bg:'F7F6F2', panel:'F7F6F2', accent:'2D5A3D', titleClr:'1A1A18', bodyClr:'4A4A46', titleFont:'Georgia',  bodyFont:'Calibri' },
-  ocean:   { name:'Ocean',   dot:'#185FA5', bg:'F0F4FA', panel:'F0F4FA', accent:'185FA5', titleClr:'0D2340', bodyClr:'2C4A6E', titleFont:'Georgia',  bodyFont:'Calibri' },
-  slate:   { name:'Slate',   dot:'#3C4A5C', bg:'F2F3F5', panel:'F2F3F5', accent:'3C4A5C', titleClr:'1C2230', bodyClr:'3C4A5C', titleFont:'Calibri',  bodyFont:'Calibri' },
-  rose:    { name:'Rose',    dot:'#993356', bg:'FBF0F4', panel:'FBF0F4', accent:'993356', titleClr:'3D0F20', bodyClr:'72243E', titleFont:'Georgia',  bodyFont:'Calibri' },
-  amber:   { name:'Amber',   dot:'#854F0B', bg:'FDF8F0', panel:'FDF8F0', accent:'854F0B', titleClr:'412402', bodyClr:'633806', titleFont:'Georgia',  bodyFont:'Calibri' },
-  midnight:{ name:'Midnight',dot:'#1a1a2e', bg:'1A1A2E', panel:'16213E', accent:'E94560', titleClr:'FFFFFF', bodyClr:'CCCCDD', titleFont:'Calibri',  bodyFont:'Calibri' },
-  mint:    { name:'Mint',    dot:'#0F6E56', bg:'F0FAF6', panel:'F0FAF6', accent:'0F6E56', titleClr:'04342C', bodyClr:'085041', titleFont:'Georgia',  bodyFont:'Calibri' },
-  charcoal:{ name:'Charcoal',dot:'#2C2C2A', bg:'EDEDED', panel:'EDEDED', accent:'2C2C2A', titleClr:'111110', bodyClr:'444441', titleFont:'Helvetica',bodyFont:'Helvetica'},
+  forest:  {name:'Forest',  dot:'#2D5A3D',bg:'F7F6F2',accent:'2D5A3D',titleClr:'1A1A18',bodyClr:'4A4A46'},
+  ocean:   {name:'Ocean',   dot:'#185FA5',bg:'F0F4FA',accent:'185FA5',titleClr:'0D2340',bodyClr:'2C4A6E'},
+  slate:   {name:'Slate',   dot:'#3C4A5C',bg:'F2F3F5',accent:'3C4A5C',titleClr:'1C2230',bodyClr:'3C4A5C'},
+  rose:    {name:'Rose',    dot:'#993356',bg:'FBF0F4',accent:'993356',titleClr:'3D0F20',bodyClr:'72243E'},
+  amber:   {name:'Amber',   dot:'#854F0B',bg:'FDF8F0',accent:'854F0B',titleClr:'412402',bodyClr:'633806'},
+  midnight:{name:'Midnight',dot:'#1a1a2e',bg:'1A1A2E',accent:'E94560',titleClr:'FFFFFF',bodyClr:'CCCCDD'},
+  mint:    {name:'Mint',    dot:'#0F6E56',bg:'F0FAF6',accent:'0F6E56',titleClr:'04342C',bodyClr:'085041'},
+  charcoal:{name:'Charcoal',dot:'#2C2C2A',bg:'EDEDED',accent:'2C2C2A',titleClr:'111110',bodyClr:'444441'},
 };
 
+var FONT_PAIRINGS = [
+  {id:'editorial', label:'Editorial',    desc:'Georgia + Calibri',      titleFont:'Georgia',        bodyFont:'Calibri',     previewTitle:'Georgia',    previewBody:'Calibri'},
+  {id:'modern',    label:'Modern',       desc:'Helvetica + Helvetica',  titleFont:'Helvetica Neue', bodyFont:'Helvetica',   previewTitle:'Helvetica',  previewBody:'Helvetica'},
+  {id:'classic',   label:'Classic',      desc:'Garamond + Gill Sans',   titleFont:'Garamond',       bodyFont:'Gill Sans',   previewTitle:'Garamond',   previewBody:'Gill Sans'},
+  {id:'sharp',     label:'Sharp',        desc:'Arial + Trebuchet',      titleFont:'Arial',          bodyFont:'Trebuchet MS',previewTitle:'Arial',      previewBody:'Trebuchet MS'},
+  {id:'elegant',   label:'Elegant',      desc:'Palatino + Book Antiqua',titleFont:'Palatino Linotype',bodyFont:'Book Antiqua',previewTitle:'Palatino',  previewBody:'Book Antiqua'},
+  {id:'tech',      label:'Tech',         desc:'Century Gothic + Calibri',titleFont:'Century Gothic', bodyFont:'Calibri',    previewTitle:'Century Gothic',previewBody:'Calibri'},
+];
+
 var currentTheme = 'forest';
+var currentFont  = 'editorial';
 
 function buildThemePicker() {
   var el = document.getElementById('theme-picker');
   el.innerHTML = '';
-  Object.entries(THEMES).forEach(([key, t]) => {
+  Object.entries(THEMES).forEach(function(entry) {
+    var key = entry[0], t = entry[1];
     var btn = document.createElement('button');
     btn.className = 'theme-btn' + (key === currentTheme ? ' active' : '');
     btn.title = t.name;
     btn.style.background = t.dot;
     btn.onclick = function() {
       currentTheme = key;
-      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.theme-btn').forEach(function(b){b.classList.remove('active');});
       btn.classList.add('active');
-      try {
-        var data = JSON.parse(document.getElementById('json-input').value.trim());
-        if (!Array.isArray(data)) data = [data];
-        renderPreview(data);
-      } catch(e) {}
+      tryRenderPreview();
     };
     el.appendChild(btn);
   });
 }
 
-var ZIP = (function() {
-  function crc32(buf) {
-    var table = [];
-    for (var i=0;i<256;i++){var c=i;for(var j=0;j<8;j++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);table[i]=c;}
-    var crc=0xFFFFFFFF;
-    for (var k=0;k<buf.length;k++)crc=table[(crc^buf[k])&0xFF]^(crc>>>8);
-    return (crc^0xFFFFFFFF)>>>0;
-  }
+function buildFontPicker() {
+  var el = document.getElementById('font-picker');
+  el.innerHTML = '';
+  FONT_PAIRINGS.forEach(function(fp) {
+    var btn = document.createElement('button');
+    btn.className = 'font-btn' + (fp.id === currentFont ? ' active' : '');
+    btn.innerHTML =
+      '<span class="font-btn-title" style="font-family:\''+fp.previewTitle+'\',serif">'+fp.label+'</span>'+
+      '<span class="font-btn-sub" style="font-family:\''+fp.previewBody+'\',sans-serif">'+fp.desc+'</span>';
+    btn.onclick = function() {
+      currentFont = fp.id;
+      document.querySelectorAll('.font-btn').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+      tryRenderPreview();
+    };
+    el.appendChild(btn);
+  });
+}
+
+function getFontPairing() {
+  return FONT_PAIRINGS.find(function(f){return f.id===currentFont;}) || FONT_PAIRINGS[0];
+}
+
+function tryRenderPreview() {
+  try {
+    var data = JSON.parse(document.getElementById('json-input').value.trim());
+    if (!Array.isArray(data)) data = [data];
+    renderPreview(data);
+  } catch(e) {}
+}
+
+var ZIP = (function(){
+  function crc32(buf){var table=[];for(var i=0;i<256;i++){var c=i;for(var j=0;j<8;j++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);table[i]=c;}var crc=0xFFFFFFFF;for(var k=0;k<buf.length;k++)crc=table[(crc^buf[k])&0xFF]^(crc>>>8);return(crc^0xFFFFFFFF)>>>0;}
   function strToBytes(str){var b=[];for(var i=0;i<str.length;i++){var c=str.charCodeAt(i);if(c<128)b.push(c);else if(c<2048)b.push(192|(c>>6),128|(c&63));else b.push(224|(c>>12),128|((c>>6)&63),128|(c&63));}return new Uint8Array(b);}
   function ui16(n){return[n&0xFF,(n>>8)&0xFF];}
   function ui32(n){return[n&0xFF,(n>>8)&0xFF,(n>>16)&0xFF,(n>>24)&0xFF];}
-  function concat(){var arrays=Array.prototype.slice.call(arguments);var total=arrays.reduce(function(s,a){return s+a.length;},0);var out=new Uint8Array(total),offset=0;arrays.forEach(function(a){out.set(a,offset);offset+=a.length;});return out;}
+  function concat(){var a=Array.prototype.slice.call(arguments),t=a.reduce(function(s,x){return s+x.length;},0),o=new Uint8Array(t),off=0;a.forEach(function(x){o.set(x,off);off+=x.length;});return o;}
   function create(){
     var files=[];
-    function addFile(name,data){var nb=strToBytes(name);var db=(typeof data==='string')?strToBytes(data):data;var crc=crc32(db);files.push({name:nb,data:db,crc:crc,dosDate:0x5400,dosTime:0x0000});}
+    function addFile(name,data){var nb=strToBytes(name);var db=(typeof data==='string')?strToBytes(data):data;files.push({name:nb,data:db,crc:crc32(db),dosDate:0x5400,dosTime:0});}
     function build(){
-      var lhs=[],offs=[],offset=0;
-      files.forEach(function(f){offs.push(offset);var lh=concat(new Uint8Array([0x50,0x4B,0x03,0x04]),new Uint8Array([20,0]),new Uint8Array([0,0]),new Uint8Array([0,0]),new Uint8Array(ui16(f.dosTime)),new Uint8Array(ui16(f.dosDate)),new Uint8Array(ui32(f.crc)),new Uint8Array(ui32(f.data.length)),new Uint8Array(ui32(f.data.length)),new Uint8Array(ui16(f.name.length)),new Uint8Array([0,0]),f.name,f.data);lhs.push(lh);offset+=lh.length;});
-      var cds=[],co=offset;
-      files.forEach(function(f,i){var cd=concat(new Uint8Array([0x50,0x4B,0x01,0x02]),new Uint8Array([20,0]),new Uint8Array([20,0]),new Uint8Array([0,0]),new Uint8Array([0,0]),new Uint8Array(ui16(f.dosTime)),new Uint8Array(ui16(f.dosDate)),new Uint8Array(ui32(f.crc)),new Uint8Array(ui32(f.data.length)),new Uint8Array(ui32(f.data.length)),new Uint8Array(ui16(f.name.length)),new Uint8Array([0,0]),new Uint8Array([0,0]),new Uint8Array([0,0]),new Uint8Array([0,0]),new Uint8Array([0,0,0,0]),new Uint8Array(ui32(offs[i])),f.name);cds.push(cd);});
+      var lhs=[],offs=[],off=0;
+      files.forEach(function(f){offs.push(off);var lh=concat(new Uint8Array([0x50,0x4B,0x03,0x04]),new Uint8Array([20,0,0,0,0,0]),new Uint8Array(ui16(f.dosTime)),new Uint8Array(ui16(f.dosDate)),new Uint8Array(ui32(f.crc)),new Uint8Array(ui32(f.data.length)),new Uint8Array(ui32(f.data.length)),new Uint8Array(ui16(f.name.length)),new Uint8Array([0,0]),f.name,f.data);lhs.push(lh);off+=lh.length;});
+      var cds=[],co=off;
+      files.forEach(function(f,i){cds.push(concat(new Uint8Array([0x50,0x4B,0x01,0x02]),new Uint8Array([20,0,20,0,0,0,0,0]),new Uint8Array(ui16(f.dosTime)),new Uint8Array(ui16(f.dosDate)),new Uint8Array(ui32(f.crc)),new Uint8Array(ui32(f.data.length)),new Uint8Array(ui32(f.data.length)),new Uint8Array(ui16(f.name.length)),new Uint8Array([0,0,0,0,0,0,0,0,0,0]),new Uint8Array(ui32(offs[i])),f.name));});
       var cs=cds.reduce(function(s,c){return s+c.length;},0);
-      var eocd=concat(new Uint8Array([0x50,0x4B,0x05,0x06]),new Uint8Array([0,0,0,0]),new Uint8Array(ui16(files.length)),new Uint8Array(ui16(files.length)),new Uint8Array(ui32(cs)),new Uint8Array(ui32(co)),new Uint8Array([0,0]));
+      var eocd=concat(new Uint8Array([0x50,0x4B,0x05,0x06,0,0,0,0]),new Uint8Array(ui16(files.length)),new Uint8Array(ui16(files.length)),new Uint8Array(ui32(cs)),new Uint8Array(ui32(co)),new Uint8Array([0,0]));
       return concat.apply(null,lhs.concat(cds).concat([eocd]));
     }
     return {addFile:addFile,build:build};
@@ -186,110 +232,63 @@ var ZIP = (function() {
   return {create:create};
 })();
 
-function emu(inches){return Math.round(inches*914400);}
+function emu(i){return Math.round(i*914400);}
 var SW=emu(10),SH=emu(5.625);
 function xmlEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');}
-
 var _spId=10;
 function nextId(){return++_spId;}
 
-function makeRect(x,y,cx,cy,color){
-  var id=nextId();
-  return '<p:sp><p:nvSpPr><p:cNvPr id="'+id+'" name="r'+id+'"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="'+x+'" y="'+y+'"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="'+color+'"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>';
-}
-
-function makeTextBox(text,x,y,cx,cy,ptSize,bold,color,font){
-  var id=nextId();
-  return '<p:sp><p:nvSpPr><p:cNvPr id="'+id+'" name="t'+id+'"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="'+x+'" y="'+y+'"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr wrap="square" lIns="0" rIns="0" tIns="0" bIns="0" anchor="t"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="'+ptSize+'" b="'+(bold?'1':'0')+'" dirty="0"><a:solidFill><a:srgbClr val="'+color+'"/></a:solidFill><a:latin typeface="'+xmlEsc(font)+'" panose="00000000000000000000"/></a:rPr><a:t>'+xmlEsc(text)+'</a:t></a:r></a:p></p:txBody></p:sp>';
-}
-
-function makePic(rId,x,y,cx,cy){
-  var id=nextId();
-  return '<p:pic><p:nvPicPr><p:cNvPr id="'+id+'" name="i'+id+'"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="'+rId+'"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="'+x+'" y="'+y+'"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>';
-}
+function makeRect(x,y,cx,cy,color){var id=nextId();return'<p:sp><p:nvSpPr><p:cNvPr id="'+id+'" name="r'+id+'"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="'+x+'" y="'+y+'"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="'+color+'"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr/><a:lstStyle/><a:p/></p:txBody></p:sp>';}
+function makeTextBox(text,x,y,cx,cy,ptSize,bold,color,font){var id=nextId();return'<p:sp><p:nvSpPr><p:cNvPr id="'+id+'" name="t'+id+'"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="'+x+'" y="'+y+'"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr wrap="square" lIns="0" rIns="0" tIns="0" bIns="0" anchor="t"/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" sz="'+ptSize+'" b="'+(bold?'1':'0')+'" dirty="0"><a:solidFill><a:srgbClr val="'+color+'"/></a:solidFill><a:latin typeface="'+xmlEsc(font)+'" panose="00000000000000000000"/></a:rPr><a:t>'+xmlEsc(text)+'</a:t></a:r></a:p></p:txBody></p:sp>';}
+function makePic(rId,x,y,cx,cy){var id=nextId();return'<p:pic><p:nvPicPr><p:cNvPr id="'+id+'" name="i'+id+'"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="'+rId+'"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="'+x+'" y="'+y+'"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>';}
 
 async function buildPptx(slides) {
   var t = THEMES[currentTheme];
+  var fp = getFontPairing();
   var zip = ZIP.create();
 
   zip.addFile('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/></Relationships>');
 
-  var contentTypes='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="png" ContentType="image/png"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/><Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/><Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/>';
-  for (var i=0;i<slides.length;i++) contentTypes+='<Override PartName="/ppt/slides/slide'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>';
-  contentTypes+='</Types>';
-  zip.addFile('[Content_Types].xml',contentTypes);
+  var ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="png" ContentType="image/png"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/><Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/><Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/>';
+  for(var i=0;i<slides.length;i++)ct+='<Override PartName="/ppt/slides/slide'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>';
+  ct+='</Types>';
+  zip.addFile('[Content_Types].xml',ct);
 
   zip.addFile('ppt/slideMasters/_rels/slideMaster1.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/></Relationships>');
-  zip.addFile('ppt/slideMasters/slideMaster1.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldMaster xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><p:cSld><p:bg><p:bgPr><a:solidFill><a:srgbClr val="'+t.bg+'"/></a:solidFill><a:effectLst/></p:bgPr></p:bg><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:txStyles><p:titleStyle><a:lvl1pPr><a:defRPr lang="en-US"/></a:lvl1pPr></p:titleStyle><p:bodyStyle><a:lvl1pPr><a:defRPr lang="en-US"/></a:lvl1pPr></p:bodyStyle><p:otherStyle><a:lvl1pPr><a:defRPr lang="en-US"/></a:lvl1pPr></p:otherStyle></p:txStyles></p:sldMaster>');
+  zip.addFile('ppt/slideMasters/slideMaster1.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldMaster xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><p:cSld><p:bg><p:bgPr><a:solidFill><a:srgbClr val="'+t.bg+'"/></a:solidFill><a:effectLst/></p:bgPr></p:bg><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:txStyles><p:titleStyle><a:lvl1pPr><a:defRPr lang="en-US"><a:latin typeface="'+xmlEsc(fp.titleFont)+'"/></a:defRPr></a:lvl1pPr></p:titleStyle><p:bodyStyle><a:lvl1pPr><a:defRPr lang="en-US"><a:latin typeface="'+xmlEsc(fp.bodyFont)+'"/></a:defRPr></a:lvl1pPr></p:bodyStyle><p:otherStyle><a:lvl1pPr><a:defRPr lang="en-US"/></a:lvl1pPr></p:otherStyle></p:txStyles></p:sldMaster>');
   zip.addFile('ppt/slideLayouts/_rels/slideLayout1.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="../slideMasters/slideMaster1.xml"/></Relationships>');
   zip.addFile('ppt/slideLayouts/slideLayout1.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sldLayout xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" type="blank"><p:cSld name="Blank"><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld></p:sldLayout>');
 
   var imageDataMap={};
-  for (var si=0;si<slides.length;si++){
-    var imgUrl=slides[si].image;
-    if(imgUrl&&!imageDataMap[imgUrl]){
-      try{var resp=await fetch(imgUrl);var blob=await resp.blob();var ext=(blob.type==='image/png')?'png':'jpg';var ab=await blob.arrayBuffer();imageDataMap[imgUrl]={ext:ext,data:new Uint8Array(ab)};}
-      catch(e){imageDataMap[imgUrl]=null;}
-    }
-  }
+  for(var si=0;si<slides.length;si++){var imgUrl=slides[si].image;if(imgUrl&&!imageDataMap[imgUrl]){try{var resp=await fetch(imgUrl);var blob=await resp.blob();var ext=(blob.type==='image/png')?'png':'jpg';var ab=await blob.arrayBuffer();imageDataMap[imgUrl]={ext:ext,data:new Uint8Array(ab)};}catch(e){imageDataMap[imgUrl]=null;}}}
 
   var addedImages={};
   var slideIdList='',presRels='';
-  for (var i=0;i<slides.length;i++){
-    var rId='rId'+(i+2);
-    slideIdList+='<p:sldId id="'+(256+i)+'" r:id="'+rId+'"/>';
-    presRels+='<Relationship Id="'+rId+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide'+(i+1)+'.xml"/>';
-  }
+  for(var i=0;i<slides.length;i++){var rId='rId'+(i+2);slideIdList+='<p:sldId id="'+(256+i)+'" r:id="'+rId+'"/>';presRels+='<Relationship Id="'+rId+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide'+(i+1)+'.xml"/>';}
   zip.addFile('ppt/_rels/presentation.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="slideMasters/slideMaster1.xml"/>'+presRels+'</Relationships>');
   zip.addFile('ppt/presentation.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:presentation xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst><p:sldIdLst>'+slideIdList+'</p:sldIdLst><p:sldSz cx="'+SW+'" cy="'+SH+'" type="screen16x9"/><p:notesSz cx="'+SH+'" cy="'+SW+'"/></p:presentation>');
 
   var imgCounter=0;
-  for (var i=0;i<slides.length;i++){
+  for(var i=0;i<slides.length;i++){
     var s=slides[i];
     var slideRels='<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout" Target="../slideLayouts/slideLayout1.xml"/>';
     var slideImgRid=null;
-
-    if(s.image&&imageDataMap[s.image]){
-      var imgInfo=imageDataMap[s.image];
-      if(!addedImages[s.image]){
-        imgCounter++;
-        var imgPath='ppt/media/img'+imgCounter+'.'+imgInfo.ext;
-        zip.addFile(imgPath,imgInfo.data);
-        addedImages[s.image]={rId:'rId2',path:imgPath,ext:imgInfo.ext,num:imgCounter};
-      }
-      slideImgRid=addedImages[s.image].rId;
-      var imgNum=addedImages[s.image].num;
-      slideRels+='<Relationship Id="'+slideImgRid+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/img'+imgNum+'.'+imageDataMap[s.image].ext+'"/>';
-    }
-
+    if(s.image&&imageDataMap[s.image]){var imgInfo=imageDataMap[s.image];if(!addedImages[s.image]){imgCounter++;zip.addFile('ppt/media/img'+imgCounter+'.'+imgInfo.ext,imgInfo.data);addedImages[s.image]={rId:'rId2',num:imgCounter,ext:imgInfo.ext};}slideImgRid=addedImages[s.image].rId;slideRels+='<Relationship Id="'+slideImgRid+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/img'+addedImages[s.image].num+'.'+addedImages[s.image].ext+'"/>';}
     zip.addFile('ppt/slides/_rels/slide'+(i+1)+'.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+slideRels+'</Relationships>');
-
     var spTree='';
     var hasImg=!!(slideImgRid);
     spTree+=makeRect(0,0,SW,SH,t.bg);
-
-    if(hasImg){
-      spTree+=makeRect(0,0,emu(5.05),SH,t.panel);
-      spTree+=makeRect(emu(0.42),emu(1.2),emu(0.05),emu(0.95),t.accent);
-      spTree+=makeTextBox(s.title||'',emu(0.6),emu(1.15),emu(4.2),emu(1.2),2800,true,t.titleClr,t.titleFont);
-      if(s.text)spTree+=makeTextBox(s.text,emu(0.6),emu(2.5),emu(4.2),emu(2.2),1500,false,t.bodyClr,t.bodyFont);
-    } else {
-      spTree+=makeRect(emu(0.55),emu(1.6),emu(0.05),emu(1.0),t.accent);
-      spTree+=makeTextBox(s.title||'',emu(0.8),emu(1.55),emu(8.6),emu(1.2),3400,true,t.titleClr,t.titleFont);
-      if(s.text)spTree+=makeTextBox(s.text,emu(0.8),emu(2.9),emu(8.2),emu(1.8),1800,false,t.bodyClr,t.bodyFont);
-    }
-
-    var slideXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+SW+'" cy="'+SH+'"/><a:chOff x="0" y="0"/><a:chExt cx="'+SW+'" cy="'+SH+'"/></a:xfrm></p:grpSpPr>'+spTree+(hasImg?makePic(slideImgRid,emu(5.1),0,emu(4.9),SH):'')+'</p:spTree></p:cSld></p:sld>';
-
-    zip.addFile('ppt/slides/slide'+(i+1)+'.xml',slideXml);
+    if(hasImg){spTree+=makeRect(0,0,emu(5.05),SH,t.bg);spTree+=makeRect(emu(0.42),emu(1.2),emu(0.05),emu(0.95),t.accent);spTree+=makeTextBox(s.title||'',emu(0.6),emu(1.15),emu(4.2),emu(1.2),2800,true,t.titleClr,fp.titleFont);if(s.text)spTree+=makeTextBox(s.text,emu(0.6),emu(2.5),emu(4.2),emu(2.2),1500,false,t.bodyClr,fp.bodyFont);}
+    else{spTree+=makeRect(emu(0.55),emu(1.6),emu(0.05),emu(1.0),t.accent);spTree+=makeTextBox(s.title||'',emu(0.8),emu(1.55),emu(8.6),emu(1.2),3400,true,t.titleClr,fp.titleFont);if(s.text)spTree+=makeTextBox(s.text,emu(0.8),emu(2.9),emu(8.2),emu(1.8),1800,false,t.bodyClr,fp.bodyFont);}
+    zip.addFile('ppt/slides/slide'+(i+1)+'.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+SW+'" cy="'+SH+'"/><a:chOff x="0" y="0"/><a:chExt cx="'+SW+'" cy="'+SH+'"/></a:xfrm></p:grpSpPr>'+spTree+(hasImg?makePic(slideImgRid,emu(5.1),0,emu(4.9),SH):'')+'</p:spTree></p:cSld></p:sld>');
   }
   return zip.build();
 }
 
 var EXAMPLE=[
-  {"title":"Welcome to Our Story","text":"A journey worth sharing with the people you love.","image":"https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=800"},
-  {"title":"Chapter One","text":"Every great adventure begins with a single step into the unknown.","image":"https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800"},
-  {"title":"The Heart of It All","text":"What matters most isn't where you're going, but who you bring along."}
+  {title:'Welcome to Our Story',text:'A journey worth sharing with the people you love.',image:'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=800'},
+  {title:'Chapter One',text:'Every great adventure begins with a single step into the unknown.',image:'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=800'},
+  {title:'The Heart of It All',text:"What matters most isn't where you're going, but who you bring along."}
 ];
 
 var textarea=document.getElementById('json-input');
@@ -298,28 +297,26 @@ var statusEl=document.getElementById('status');
 function loadExample(){textarea.value=JSON.stringify(EXAMPLE,null,2);setStatus('','');renderPreview(EXAMPLE);}
 function clearAll(){textarea.value='';setStatus('','');document.getElementById('preview').innerHTML='<div class="empty-state">🗂️<br><br>Paste JSON on the left and<br>your slides will preview here.</div>';}
 function setStatus(msg,type){statusEl.textContent=msg;statusEl.className=type||'';}
-function esc(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 function renderPreview(slides){
   if(!slides||!slides.length)return;
   var t=THEMES[currentTheme];
+  var fp=getFontPairing();
+  var bg='#'+t.bg, ac='#'+t.accent, tc='#'+t.titleClr, bc='#'+t.bodyClr;
   var html='<div class="slide-list">';
   for(var i=0;i<slides.length;i++){
     var s=slides[i];
-    var bg='#'+t.bg;
-    var accentClr='#'+t.accent;
-    var titleClr='#'+t.titleClr;
-    var bodyClr='#'+t.bodyClr;
-    html+='<div class="slide-card" style="background:'+bg+';border-color:#'+t.accent+'44">'
+    html+='<div class="slide-card" style="background:'+bg+';border-color:'+ac+'44">'
       +'<div class="slide-preview">'
       +'<div class="slide-left">'
-      +'<div class="slide-accent-bar" style="background:'+accentClr+'"></div>'
-      +'<div class="slide-num" style="color:'+accentClr+'">Slide '+(i+1)+'</div>'
-      +'<div class="slide-title" style="color:'+titleClr+'">'+esc(s.title||'(no title)')+'</div>'
-      +(s.text?'<div class="slide-text" style="color:'+bodyClr+'">'+esc(s.text)+'</div>':'')
-      +(s.image?'<div class="img-tag" style="background:'+accentClr+'22;color:'+accentClr+'">📷 image</div>':'')
+      +'<div class="slide-accent-bar" style="background:'+ac+'"></div>'
+      +'<div class="slide-num" style="color:'+ac+'">Slide '+(i+1)+'</div>'
+      +'<div class="slide-title" style="color:'+tc+';font-family:\''+fp.previewTitle+'\',serif">'+esc(s.title||'(no title)')+'</div>'
+      +(s.text?'<div class="slide-text" style="color:'+bc+';font-family:\''+fp.previewBody+'\',sans-serif">'+esc(s.text)+'</div>':'')
+      +(s.image?'<div class="img-tag" style="background:'+ac+'22;color:'+ac+'">photo</div>':'')
       +'</div>'
-      +(s.image?'<div class="slide-right" style="background-image:url('+esc(s.image)+')"></div>':'<div class="slide-right" style="background:#'+t.accent+'11"></div>')
+      +(s.image?'<div class="slide-right" style="background-image:url('+esc(s.image)+')"></div>':'<div class="slide-right" style="background:'+ac+'11"></div>')
       +'</div>'
       +'</div>';
   }
@@ -327,33 +324,28 @@ function renderPreview(slides){
   document.getElementById('preview').innerHTML=html;
 }
 
-textarea.addEventListener('input',function(){
-  try{var data=JSON.parse(textarea.value.trim());if(!Array.isArray(data))data=[data];renderPreview(data);setStatus('','');}catch(e){}
-});
+textarea.addEventListener('input',function(){try{var d=JSON.parse(textarea.value.trim());if(!Array.isArray(d))d=[d];renderPreview(d);setStatus('','');}catch(e){}});
 
 async function generate(){
   var btn=document.getElementById('gen-btn');
-  btn.disabled=true;
-  setStatus('Building…','');
+  btn.disabled=true;setStatus('Building…','');
   try{
     var raw=textarea.value.trim();
     if(!raw)throw new Error('Please paste some JSON first.');
     var slides=JSON.parse(raw);
     if(!Array.isArray(slides))slides=[slides];
     if(!slides.length)throw new Error('JSON array is empty.');
-    renderPreview(slides);
-    _spId=10;
+    renderPreview(slides);_spId=10;
     var bytes=await buildPptx(slides);
     var blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.presentationml.presentation'});
     var url=URL.createObjectURL(blob);
-    var a=document.createElement('a');
-    a.href=url;a.download='slides-'+currentTheme+'.pptx';
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    setStatus('✓ Downloaded!','ok');
+    var a=document.createElement('a');a.href=url;a.download='slides-'+currentTheme+'-'+currentFont+'.pptx';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+    setStatus('Downloaded!','ok');
   }catch(e){setStatus('Error: '+e.message,'err');console.error(e);}
   btn.disabled=false;
 }
 
 buildThemePicker();
+buildFontPicker();
 </script>
